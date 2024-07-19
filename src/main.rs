@@ -7,6 +7,7 @@ use std::net::SocketAddr;
 pub use self::error::{Error, Result};
 mod error;
 mod web;
+ 
 #[derive(Debug,Deserialize)]
 struct HelloParams {
     name: Option<String>,
