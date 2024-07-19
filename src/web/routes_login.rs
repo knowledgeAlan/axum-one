@@ -1,9 +1,13 @@
 
-use axum::Json;
+use axum::{routing::post, Json, Router};
 use serde::Deserialize;
 use serde_json::{json, Value};
 
 use crate::{web,Error,Result};
+
+pub fn routes() -> Router {
+    Router::new().route("/api/login",post(api_login))
+}
 
 
 async fn api_login(playload:Json<LoginPayLoad>) -> Result<Json<Value>>{
