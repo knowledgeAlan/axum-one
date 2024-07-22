@@ -13,14 +13,14 @@ pub fn routes() -> Router {
 async fn api_login(playload:Json<LoginPayLoad>) -> Result<Json<Value>>{
     println!("->> {:<12} -api_login","handler");
 
-    if(playload.username !="demo1" || playload.pwd != "welcome"){
+    if playload.username !="demo1" || playload.pwd != "welcome" {
         return  Err(Error::LoginFail);
     }
 
 
     let body = Json(json!({
         "result":{
-            "success":true,
+            "success":true, 
         }
     }));
 
