@@ -2,12 +2,13 @@
 
 use axum::{extract::{Path, Query}, middleware, response::{Html, IntoResponse, Response}, routing::{get, get_service, Router}};
 use serde::Deserialize;
+use tower_cookies::CookieManagerLayer;
 use tower_http::services::ServeDir;
 use std::net::SocketAddr;
 pub use self::error::{Error, Result};
 mod error;
 mod web;
- 
+mod model;
 #[derive(Debug,Deserialize)]
 struct HelloParams {
     name: Option<String>,
@@ -19,6 +20,7 @@ async fn main() {
     .merge(routes_hello())
     .merge(web::routes_login::routes())
     .layer(middleware::map_response(main_response_mapper))
+    .layer(CookieManagerLayer::new())
     .fallback_service(routes_static())
     ;
 
