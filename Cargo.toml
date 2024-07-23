@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 
 # -- Web
-axum  = "0.7"
+axum  = {version = "0.7",features = ["macros"]}
 tower-http = { version = "0.5", features = ["fs"] }
 tower-cookies = "0.10"
 
