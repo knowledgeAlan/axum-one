@@ -3,15 +3,21 @@
  
  
 
-use axum::extract::{Path, State};
+use axum::extract::{FromRef, Path, State};
 use axum::routing::{delete, post};
 use axum::{Json, Router};
 
 use crate::model::{ModelController, Ticket, TicketForCreate};
 use crate::Result;
 
+#[derive(Clone,FromRef)]
+struct AppState {
+    mc: ModelController
+}
 
 pub fn routes(mc:ModelController) -> Router {
+
+    // let app_state = AppState{mc};
     Router::new().
     route("/tickets", post(create_ticket).get(list_tickets))
     .route("/tickets/:id", delete(delete_ticket))
