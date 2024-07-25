@@ -19,6 +19,7 @@ serde = { version = "1.0.204", features = ["derive"] }
 serde_json = "1.0.120"
 serde_with = "3.9.0"
 axum-server = "0.6.0"
+lazy-regex = "3.2.0"
 
 [dev-dependencies]
 anyhow = "1"
