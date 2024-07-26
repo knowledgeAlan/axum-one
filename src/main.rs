@@ -10,6 +10,7 @@ pub use self::error::{Error, Result};
 mod error;
 mod web;
 mod model;
+mod ctx;
 #[derive(Debug,Deserialize)]
 struct HelloParams {
     name: Option<String>,
