@@ -10,6 +10,7 @@ use crate::ctx::Ctx;
 #[derive(Clone,Debug,Serialize)]
 pub struct Ticket {
     pub id:u64,
+    pub cid: u64,
     pub title: String,
 }
 
@@ -37,7 +38,7 @@ impl  ModelController {
 
 impl ModelController {
 
-    pub async fn create_ticket(&self,ticket_fc:TicketForCreate) -> Result<Ticket>{
+    pub async fn create_ticket(&self,ctx:Ctx,ticket_fc:TicketForCreate) -> Result<Ticket>{
 
 
         let mut store = self.tickets_store.lock().unwrap();
@@ -46,6 +47,7 @@ impl ModelController {
 
         let ticket = Ticket {
             id,
+            cid: ctx.user_id(),
             title: ticket_fc.title,
         };
 
@@ -54,7 +56,7 @@ impl ModelController {
     }
 
 
-    pub async fn list_tickets(&self) -> Result<Vec<Ticket>> {
+    pub async fn list_tickets(&self,_ctx:Ctx) -> Result<Vec<Ticket>> {
         
         let store = self.tickets_store.lock().unwrap();
         let tickets = store.iter().filter_map(|t| t.clone()).collect();
@@ -62,7 +64,7 @@ impl ModelController {
         Ok(tickets)
     }
 
-    pub async fn delete_ticket(&self,id:u64) -> Result<Ticket> {
+    pub async fn delete_ticket(&self,_ctx:Ctx,id:u64) -> Result<Ticket> {
 
         let mut store = self.tickets_store.lock().unwrap();
 

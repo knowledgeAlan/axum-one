@@ -1,3 +1,5 @@
+
+
 use axum::{async_trait, RequestPartsExt};
 use axum::body::Body;
 use axum::extract::FromRequestParts;
@@ -10,15 +12,17 @@ use crate::web::AUTH_TOKEN;
 use crate::{Error,Result};
 use crate::ctx::Ctx;
  pub async fn mw_require_auth(
-    cookies:Cookies,
+    ctx:Result<Ctx>,
     req:Request<Body>,
     next:Next,
  ) -> Result<Response>{
 
-    let auth_token = cookies.get(AUTH_TOKEN).map(|c| c.value().to_string());
+   println!("->>{:<12} - mw_require_auth- {ctx:?}","MIDDLEWARE");
+   //  let auth_token = cookies.get(AUTH_TOKEN).map(|c| c.value().to_string());
 
-    auth_token.ok_or(Error::AuthFailNoAuthTokenCookie)
-    .and_then(parse_token)?;
+   //  auth_token.ok_or(Error::AuthFailNoAuthTokenCookie)
+   //  .and_then(parse_token)?;
+      ctx?;
     Ok(next.run(req).await)
  }
 
@@ -48,8 +52,35 @@ use crate::ctx::Ctx;
       let auth_token = cookies.get(AUTH_TOKEN).map(|c| c.value().to_string());
 
       let (user_id,exp,sign) = auth_token.ok_or(Error::AuthFailNoAuthTokenCookie).and_then(parse_token)?;
-      //
-      todo!()
+      
+      Ok(Ctx::new(user_id))
    }
      
+ }
+
+
+ pub async fn mw_ctx_resolver (cookies: Cookies,mut req:Request<Body>, next:Next) -> Result<Response>{
+
+   println!("->> {:<12} - mw_ctx_resolver","MIDDLEWARE");
+
+   let auth_token = cookies.get(AUTH_TOKEN).map(|c|c.value().to_string());
+
+   let result_ctx = match auth_token
+      .ok_or(Error::AuthFailNoAuthTokenCookie)
+      .and_then(parse_token) {
+
+    Ok((user_id,_exp,_sign)) =>{
+         Ok(Ctx::new(user_id))
+    } 
+    Err(e) => Err(e),  
+   };
+
+
+   if result_ctx.is_err() && !match!(result_ctx,Err(Error::AuthFailNoAuthTokenCookie)) 
+    {    
+        cookies.remove(Cookies::named(AUTH_TOKEN));
+    }
+
+
+   Ok(next.run(req).await)
  }
