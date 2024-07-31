@@ -78,9 +78,10 @@ use crate::ctx::Ctx;
 
    if result_ctx.is_err() && !match!(result_ctx,Err(Error::AuthFailNoAuthTokenCookie)) 
     {    
-        cookies.remove(Cookies::named(AUTH_TOKEN));
+      cookies.remove(Cookies::named(AUTH_TOKEN));
     }
 
+    req.extensions_mut().insert(result_ctx);
 
-   Ok(next.run(req).await)
+    Ok(next.run(req).await)
  }
